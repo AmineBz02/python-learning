@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Env / secrets
+.env
+
+# Data (level-specific, decided per level)
+# *.db
+# *.csv
