@@ -85,7 +85,26 @@ def get_guess(attempt: int, max_attempts: int | None = None) -> int | None:
             print(f"  ⚠️  Enter a number between {MIN_NUMBER} and {MAX_NUMBER}.")
         else:
             print("  ⚠️  Please enter a number.")
+def print_result(attempts: int, won: bool, secret: int,
+                 best: int | None = None) -> None:
+    """
+    Print the outcome of a round.
 
+    Args:
+        attempts — number of valid guesses made
+        won      — True if the player guessed correctly
+        secret   — the secret number (revealed on loss/quit)
+        best     — best score this session, or None if not tracked yet
+    """
+    print("-" * 44)
+    if won:
+        print(f"🎉 Correct! You guessed it in {attempts} attempt(s).")
+        if best is not None and attempts == best:
+            print(f"   🥇 New best score: {best} attempt(s)!")
+    else:
+        print(f"😔 You lost. The number was {secret}.")
+        print(f"   You made {attempts} attempt(s).")
+    print("-" * 44)
 
 # --- Core --------------------------------------------------------------------
 
@@ -110,8 +129,9 @@ def play_round() -> tuple[bool, int]:
         result = check_guess(guess, secret)
 
         if result == "correct":
-            print(f"🎉 Correct! You guessed it in {attempts} attempt(s).")
+            print_result(attempts, won=True, secret=secret)
             return (True, attempts)
+
 
         print(f"   {result}")
 
