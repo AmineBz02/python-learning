@@ -105,7 +105,21 @@ def print_result(attempts: int, won: bool, secret: int,
         print(f"😔 You lost. The number was {secret}.")
         print(f"   You made {attempts} attempt(s).")
     print("-" * 44)
+def ask_replay() -> bool:
+    """
+    Ask the player whether to play another round.
 
+    Returns:
+        True  — player wants to play again (y / Y)
+        False — player wants to quit (n / N)
+    """
+    while True:
+        raw = input("Play again? (y/n): ").strip().lower()
+        if raw in ("y", "yes"):
+            return True
+        if raw in ("n", "no"):
+            return False
+        print("  ⚠️  Please answer 'y' or 'n'.")
 # --- Core --------------------------------------------------------------------
 
 def play_round() -> tuple[bool, int]:
@@ -121,8 +135,8 @@ def play_round() -> tuple[bool, int]:
     while True:
         guess = get_guess(attempts + 1)
 
-        if guess is None:                     # player typed 'q'
-            print(f"  👋 Quitting. The number was {secret}.")
+        if guess is None:  
+            print_result(attempts, won=False, secret=secret)                   # player typed 'q'
             return (False, attempts)
 
         attempts += 1
@@ -138,7 +152,12 @@ def play_round() -> tuple[bool, int]:
 def main() -> None:
     """Entry point for the Number Guessing Game."""
     print_intro()
-    play_round()    
+    while True:
+        play_round()
+        if not ask_replay():
+            print("Thanks for playing! Goodbye.")
+            return 
+      
 
 
 
