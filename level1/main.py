@@ -16,6 +16,21 @@ MAX_NUMBER = 100
 def random_number() -> int:
     """Return a random integer in [MIN_NUMBER, MAX_NUMBER]."""
     return random.randint(MIN_NUMBER, MAX_NUMBER)
+def validate_input(raw: str) -> int | None:
+    """
+    Parse and validate a raw input string.
+
+    Returns:
+        int   — if raw is a valid integer in [MIN_NUMBER, MAX_NUMBER]
+        None  — otherwise (caller decides what message to show)
+    """
+    raw = raw.strip()
+    if not raw.isdigit():
+        return None                # handles '', 'abc', '-5', '3.14', '1e3'
+    value = int(raw)
+    if value < MIN_NUMBER or value > MAX_NUMBER:
+        return None
+    return value
 
 
 # --- Game logic --------------------------------------------------------------
@@ -45,32 +60,63 @@ def print_intro() -> None:
     print("   I'm thinking of a number between 1 and 100.")
     print("   Type your guess and I'll tell you if it's high or low.")
     print("=" * 44)
+def get_guess(attempt: int, max_attempts: int | None = None) -> int | None:
+    """
+    Prompt until a valid guess is received, or the player quits with 'q'.
+
+    Returns:
+        int   — a valid guess in [MIN_NUMBER, MAX_NUMBER]
+        None  — player typed 'q' (or 'Q') to quit
+    """
+    prompt = f"Attempt {attempt}"
+    if max_attempts is not None:
+        prompt += f"/{max_attempts}"
+    prompt += " → "
+
+    while True:
+        raw = input(prompt)
+        if raw.strip().lower() == "q":
+            return None
+        guess = validate_input(raw)
+        if guess is not None:
+            return guess
+        # figure out which message to show
+        if raw.strip().isdigit():
+            print(f"  ⚠️  Enter a number between {MIN_NUMBER} and {MAX_NUMBER}.")
+        else:
+            print("  ⚠️  Please enter a number.")
 
 
 # --- Core --------------------------------------------------------------------
 
-def play_round() -> None:
-    """Play one full round: generate secret, loop until correct guess."""
+def play_round() -> tuple[bool, int]:
+    """
+    Play one full round.
+
+    Returns:
+        (won, attempts) — won is False if player quit or lost
+    """
     secret = random_number()
     attempts = 0
 
     while True:
-        raw = input("Your guess: ")
-        guess = int(raw)          # validation added in STORY-02
-        attempts += 1
+        guess = get_guess(attempts + 1)
 
+        if guess is None:                     # player typed 'q'
+            print(f"  👋 Quitting. The number was {secret}.")
+            return (False, attempts)
+
+        attempts += 1
         result = check_guess(guess, secret)
 
         if result == "correct":
             print(f"🎉 Correct! You guessed it in {attempts} attempt(s).")
-            return
+            return (True, attempts)
 
         print(f"   {result}")
 
-
 def main() -> None:
     """Entry point for the Number Guessing Game."""
-
     print_intro()
     play_round()    
 
