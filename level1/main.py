@@ -9,6 +9,7 @@ import random
 
 MIN_NUMBER = 1
 MAX_NUMBER = 100
+MAX_ATTEMPTS = 7
 
 
 # --- Utilities ---------------------------------------------------------------
@@ -86,7 +87,8 @@ def get_guess(attempt: int, max_attempts: int | None = None) -> int | None:
         else:
             print("  ⚠️  Please enter a number.")
 def print_result(attempts: int, won: bool, secret: int,
-                 best: int | None = None) -> None:
+                 best: int | None = None,
+                 reason: str = "exhausted") -> None:
     """
     Print the outcome of a round.
 
@@ -95,6 +97,7 @@ def print_result(attempts: int, won: bool, secret: int,
         won      — True if the player guessed correctly
         secret   — the secret number (revealed on loss/quit)
         best     — best score this session, or None if not tracked yet
+        reason   — "exhausted" | "quit" (only used when won is False)
     """
     print("-" * 44)
     if won:
@@ -102,8 +105,11 @@ def print_result(attempts: int, won: bool, secret: int,
         if best is not None and attempts == best:
             print(f"   🥇 New best score: {best} attempt(s)!")
     else:
-        print(f"😔 You lost. The number was {secret}.")
-        print(f"   You made {attempts} attempt(s).")
+        if reason == "quit":
+            print(f"👋 You quit. The number was {secret}.")
+        else:
+            print(f"😔 You lost. The number was {secret}.")
+        print(f"   You made {attempts}/{MAX_ATTEMPTS} attempt(s).")
     print("-" * 44)
 def ask_replay() -> bool:
     """
@@ -132,8 +138,8 @@ def play_round() -> tuple[bool, int]:
     secret = random_number()
     attempts = 0
 
-    while True:
-        guess = get_guess(attempts + 1)
+    while attempts < MAX_ATTEMPTS:
+        guess = get_guess(attempts + 1, MAX_ATTEMPTS)
 
         if guess is None:  
             print_result(attempts, won=False, secret=secret)                   # player typed 'q'
@@ -148,6 +154,9 @@ def play_round() -> tuple[bool, int]:
 
 
         print(f"   {result}")
+    # Fell out of loop → out of attempts
+    print_result(attempts, won=False, secret=secret, reason="exhausted")
+    return (False, attempts)
 
 def main() -> None:
     """Entry point for the Number Guessing Game."""

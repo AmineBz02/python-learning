@@ -160,7 +160,7 @@ Level 1 capstone project. A CLI game where the player guesses a random 1–100 n
 
 ---
 
-### 🎚️ STORY-05 — Bonus: Attempts Limit
+###  STORY-05 — Bonus: Attempts Limit
 **Type:** feature · **Priority:** P1 · **Estimate:** S
 **Description:** As a player, I want a 7-attempt cap so the game has a win/lose challenge.
 **Acceptance Criteria:**
