@@ -27,6 +27,12 @@ def average(students: dict, name: str) -> float | None:
       return None
    return sum(students[name]) / len(students[name])
 
+def top_student(students: dict) -> str | None:
+   if not students:
+      print("Error: No students available.")
+      return None 
+   
+   return max(students, key=lambda n: sum(students[n])/len(students[n]) if students[n] else -1)
 
 def main()-> None:
    return
