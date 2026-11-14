@@ -18,6 +18,16 @@ def add_score(students: dict, name: str, score: float) -> None:
       return
    students[name].append(score)
 
+def average(students: dict, name: str) -> float | None:
+   if name not in students:
+      print(f"Error: Student '{name}' does not exist.")
+      return None
+   if not students[name]:
+      print(f"Error: Student '{name}' has no scores.")
+      return None
+   return sum(students[name]) / len(students[name])
+
+
 def main()-> None:
    return
 
