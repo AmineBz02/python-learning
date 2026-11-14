@@ -112,9 +112,79 @@ def load_from_file(path: str = DEFAULT_PATH) -> dict[str, list[float]]:
     except OSError as e:
         print(f"⚠️  Could not read '{path}': {e}")
     return students
+# ═════════════════════════════════════════════════════════════
+# SGM-9 — menu loop (match/case)
+# ═════════════════════════════════════════════════════════════
+MENU = """
+────────── 📚 Student Grade Manager ──────────
+ 1) Add student
+ 2) Add score
+ 3) Show average
+ 4) Show top student
+ 5) Show report
+ 6) Save to file
+ 7) Load from file
+ 8) Exit
+──────────────────────────────────────────────
+"""
 
-def main()-> None:
-   return
+
+def _prompt(text: str) -> str:
+    try:
+        return input(text)
+    except (EOFError, KeyboardInterrupt):
+        print("\n👋 Bye.")
+        raise SystemExit(0)
+
+
+def main() -> None:
+    students: dict[str, list[float]] = {}
+    print("Welcome! Starting with empty data.")
+
+    while True:
+        print(MENU)
+        choice = _prompt("Choose an option (1–8): ").strip()
+
+        match choice:
+            case "1":
+                add_student(students, _prompt("Student name: "))
+            case "2":
+                name = _prompt("Student name: ")
+                raw = _prompt("Score (0–100): ").strip()
+                try:
+                    score = float(raw)
+                except ValueError:
+                    print(f"⚠️  '{raw}' is not a number.")
+                    continue
+                add_score(students, name, score)
+            case "3":
+                name = _prompt("Student name: ")
+                avg = average(students, name)
+                if avg is None:
+                    print(f"⚠️  No average for '{name.strip()}'.")
+                else:
+                    print(f"📊 Average for '{name.strip()}': {avg:.2f}")
+            case "4":
+                top = top_student(students)
+                if top is None:
+                    print("ℹ️  No student with scores yet.")
+                else:
+                    print(f"🏆 Top student: {top} ({average(students, top):.2f})")
+            case "5":
+                show_report(students)
+            case "6":
+                path = _prompt(f"File path [{DEFAULT_PATH}]: ").strip() or DEFAULT_PATH
+                save_to_file(students, path)
+            case "7":
+                path = _prompt(f"File path [{DEFAULT_PATH}]: ").strip() or DEFAULT_PATH
+                students = load_from_file(path)
+            case "8":
+                print("👋 Bye.")
+                break
+            case _:
+                print("⚠️  Invalid choice. Pick 1–8.")
+
+
 
 if __name__ == "__main__" :
 
