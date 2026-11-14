@@ -1,3 +1,7 @@
+DEFAULT_PATH = "students.txt"
+
+
+
 def add_student(students: dict, name: str) -> None:
    if name.strip() == "":
       print("Error: Student name cannot be empty.")
@@ -60,6 +64,20 @@ def show_report(students: dict[str, list[float]]) -> None:
         avg = average(students, name)
         avg_str = f"{avg:.2f}" if avg is not None else "N/A"
         print(f"{name:<{name_w}} | {scores_str:<{scores_w}} | {avg_str}")
+# ═════════════════════════════════════════════════════════════
+# SGM-7 — save_to_file()
+# ═════════════════════════════════════════════════════════════
+def save_to_file(students: dict[str, list[float]],
+                 path: str = DEFAULT_PATH) -> None:
+    """Persist to text file: one line per student as 'Name: s1,s2,s3'."""
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            for name, scores in students.items():
+                f.write(f"{name}: {','.join(f'{x:g}' for x in scores)}\n")
+        print(f"💾 Saved {len(students)} student(s) to '{path}'.")
+    except OSError as e:
+        print(f"⚠️  Could not save to '{path}': {e}")
+
 
 def main()-> None:
    return
