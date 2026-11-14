@@ -78,6 +78,40 @@ def save_to_file(students: dict[str, list[float]],
     except OSError as e:
         print(f"⚠️  Could not save to '{path}': {e}")
 
+# ═════════════════════════════════════════════════════════════
+# SGM-8 — load_from_file()
+# ═════════════════════════════════════════════════════════════
+def load_from_file(path: str = DEFAULT_PATH) -> dict[str, list[float]]:
+    """Parse text file back into dict. Missing file → {} (no crash)."""
+    students: dict[str, list[float]] = {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for lineno, raw in enumerate(f, 1):
+                line = raw.strip()
+                if not line:
+                    continue
+                if ":" not in line:
+                    print(f"⚠️  Skipping malformed line {lineno}: {line!r}")
+                    continue
+                name, _, rest = line.partition(":")
+                name = name.strip()
+                if not name:
+                    print(f"⚠️  Skipping line {lineno} (empty name).")
+                    continue
+                scores: list[float] = []
+                if rest.strip():
+                    try:
+                        scores = [float(x) for x in rest.split(",") if x.strip()]
+                    except ValueError:
+                        print(f"⚠️  Skipping line {lineno} (bad score list).")
+                        continue
+                students[name] = scores
+        print(f"📂 Loaded {len(students)} student(s) from '{path}'.")
+    except FileNotFoundError:
+        print(f"ℹ️  No file at '{path}' — starting with empty data.")
+    except OSError as e:
+        print(f"⚠️  Could not read '{path}': {e}")
+    return students
 
 def main()-> None:
    return
