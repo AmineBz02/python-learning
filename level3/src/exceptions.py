@@ -11,3 +11,5 @@ class ExpenseNotFound(ExpenseError):
 
 class InvalidAmount(ExpenseError):
     """Raised when an amount is not a valid positive number."""
+class StorageError (ExpenseError):
+     """Raised when the storage layer cannot read/write the data file."""
